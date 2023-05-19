@@ -20,25 +20,25 @@ export async function uploadRoutes(app: FastifyInstance) {
     }
 
     const mimeTypeRegex = /^(image|video)\/[a-zA-Z]+/
-    const idValidFileFormat = mimeTypeRegex.test(upload.mimetype)
+    const isValidFileFormat = mimeTypeRegex.test(upload.mimetype)
 
-    if (!idValidFileFormat) {
+    if (!isValidFileFormat) {
       return reply.status(400).send()
     }
 
     const fileId = randomUUID()
     const extension = extname(upload.filename)
 
-    const filename = fileId.concat(extension)
+    const fileName = fileId.concat(extension)
 
     const writeStream = createWriteStream(
-      resolve(__dirname, '../../uploads/', filename)
+      resolve(__dirname, '../../uploads/', fileName)
     )
 
     await pump(upload.file, writeStream)
 
     const fullUrl = request.protocol.concat('://').concat(request.hostname)
-    const fileUrl = new URL(`/${filename}`, fullUrl).toString()
+    const fileUrl = new URL(`/uploads/${fileName}`, fullUrl).toString()
 
     return { fileUrl }
 
